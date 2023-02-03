@@ -35,51 +35,63 @@ const tagsList = [
 class Home extends Component {
   state = {
     userInput: '',
-    activeOption: tagsList[0].displayText,
+    optionSelected: tagsList[0].displayText,
     taskList: [],
     activeOptionId: '',
+  }
+
+  onChangeOption = event => {
+    this.setState({optionSelected: event.target.value})
   }
 
   onChangeUserInput = event => {
     this.setState({userInput: event.target.value})
   }
 
-  onChangeOption = event => {
-    this.setState({activeOption: event.target.value})
-  }
+  onAddTask = event => {
+    event.preventDefault()
+    const {userInput, optionSelected} = this.state
 
-  onAddTaskBtn = () => {
-    const {userInput, activeOption} = this.state
-
-    const task = {
+    const newTask = {
       id: uuidv4(),
       userInput,
-      activeOption,
+      optionSelected,
     }
 
     this.setState(prevState => ({
-      taskList: [...prevState.taskList, task],
+      taskList: [...prevState.taskList, newTask],
       userInput: '',
+      optionSelected: tagsList[0].displayText,
     }))
   }
 
   onClickTagBtn = optionId => {
-    this.setState({activeOptionId: optionId})
+    const {activeOptionId} = this.state
+
+    if (activeOptionId === optionId) {
+      this.setState({activeOptionId: ''})
+    } else {
+      this.setState({activeOptionId: optionId})
+    }
   }
 
-  onChangeActiveTab = () => {}
-
   render() {
-    const {userInput, activeOption, taskList, activeOptionId} = this.state
+    const {userInput, optionSelected, taskList, activeOptionId} = this.state
 
-    const filteredTabs = taskList.filter(
-      each => each.activeOption.toUpperCase() !== activeOptionId.toUpperCase(),
-    )
+    let filteredTasks
+    if (activeOptionId === '') {
+      filteredTasks = taskList
+    } else {
+      filteredTasks = taskList.filter(
+        eachTask => eachTask.optionSelected.toUpperCase() === activeOptionId,
+      )
+    }
 
+    const noTasks = filteredTasks.length === 0
     return (
       <div className="app-container">
         <div className="first-container">
-          <form className="form-container">
+          <form className="form-container" onSubmit={this.onAddTask}>
             <h1 className="first-head">Create a task!</h1>
             <div className="label-container">
               <label htmlFor="task" className="label-head">
@@ -88,8 +100,8 @@ class Home extends Component {
               <input
                 type="text"
                 id="task"
-                className="user-input"
                 value={userInput}
+                className="user-input"
                 placeholder="Enter the task here"
                 onChange={this.onChangeUserInput}
               />
@@ -100,19 +112,15 @@ class Home extends Component {
               </label>
               <select
                 className="options"
-                value={activeOption}
                 onChange={this.onChangeOption}
+                value={optionSelected}
               >
                 {tagsList.map(eachTag => (
                   <Option key={eachTag.optionId} optionDetails={eachTag} />
                 ))}
               </select>
             </div>
-            <button
-              type="button"
-              className="add-button"
-              onClick={this.onAddTaskBtn}
-            >
+            <button type="submit" className="add-button">
               Add Task
             </button>
           </form>
@@ -120,21 +128,28 @@ class Home extends Component {
         <div className="second-container">
           <h1 className="second-head">Tags</h1>
           <ul className="tags-container">
-            {tagsList.map(each => (
+            {tagsList.map(eachTag => (
               <TagItem
-                key={each.optionId}
-                tagDetails={each}
-                isActive={activeOption.toUpperCase() === activeOptionId}
+                key={eachTag.optionId}
+                tagDetails={eachTag}
                 onClickTagBtn={this.onClickTagBtn}
+                activeOptionId={activeOptionId}
               />
             ))}
           </ul>
           <h1 className="second-head">Tasks</h1>
-          <ul className="tasks-container">
-            {filteredTabs.map(eachTask => (
-              <Task key={eachTask.id} taskDetails={eachTask} />
-            ))}
-          </ul>
+
+          {noTasks ? (
+            <div className="tasks-main-container">
+              <p className="no-task-text">No Tasks Added Yet</p>
+            </div>
+          ) : (
+            <ul className="tasks-container">
+              {filteredTasks.map(eachTask => (
+                <Task key={eachTask.id} taskDetails={eachTask} />
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     )

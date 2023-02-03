@@ -1,8 +1,10 @@
 import './index.css'
 
 const TagItem = props => {
-  const {isActive, tagDetails, onClickTagBtn} = props
+  const {tagDetails, onClickTagBtn, activeOptionId} = props
   const {optionId, displayText} = tagDetails
+
+  const isActive = optionId.toUpperCase() === activeOptionId
 
   const activeBtn = isActive ? 'active-button tag-button' : 'tag-button'
 
