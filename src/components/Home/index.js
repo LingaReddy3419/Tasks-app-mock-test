@@ -35,7 +35,7 @@ const tagsList = [
 class Home extends Component {
   state = {
     userInput: '',
-    optionSelected: tagsList[0].displayText,
+    optionSelected: tagsList[0].optionId,
     taskList: [],
     activeOptionId: '',
   }
@@ -61,7 +61,7 @@ class Home extends Component {
     this.setState(prevState => ({
       taskList: [...prevState.taskList, newTask],
       userInput: '',
-      optionSelected: tagsList[0].displayText,
+      optionSelected: tagsList[0].optionId,
     }))
   }
 
@@ -111,6 +111,7 @@ class Home extends Component {
                 Tags
               </label>
               <select
+                id="tag"
                 className="options"
                 onChange={this.onChangeOption}
                 value={optionSelected}

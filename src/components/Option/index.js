@@ -3,9 +3,13 @@ import './index.css'
 const Option = props => {
   const {optionDetails} = props
 
-  const {displayText} = optionDetails
+  const {optionId, displayText} = optionDetails
 
-  return <option>{displayText}</option>
+  return (
+    <option key={optionId} value={optionId}>
+      {displayText}
+    </option>
+  )
 }
 
 export default Option
